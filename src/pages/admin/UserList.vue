@@ -41,20 +41,7 @@
                 </span>
               </td>
               <td>
-                <div v-if="!user.is_blocked" class="btn-group" role="group">
-                  <button type="button" class="btn btn-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
-                    Lock
-                  </button>
-                  <ul class="dropdown-menu">
-                    <li><button @click="blockUser(user.username, 'spamming')" class="dropdown-item">Spamming</button></li>
-                    <li><button @click="blockUser(user.username, 'cheating')" class="dropdown-item">Cheating</button></li>
-                    <li><button @click="blockUser(user.username, 'other')" class="dropdown-item">Other</button></li>
-                  </ul>
-                </div>
-                <button v-else @click="unblockUser(user.username)" class="btn btn-primary btn-sm">Unlock</button>
-                
-                <button @click="openModal(user)" class="btn btn-sm btn-secondary ms-1">Update</button>
-                <button @click="confirmDelete(user.username)" class="btn btn-sm btn-danger ms-1">Delete</button>
+                <span class="text-muted small">No actions available</span>
               </td>
             </tr>
           </tbody>
