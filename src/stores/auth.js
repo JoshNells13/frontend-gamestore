@@ -19,34 +19,37 @@ export const useAuthStore = defineStore('auth', {
         async signIn(credentials) {
             this.loading = true
             this.errors = null
+
             try {
                 const response = await api.post('/v1/auth/signin', credentials)
-                this.token = response.data.token
-                localStorage.setItem('token', this.token)
 
-                // Fetch user data after successful login
-                const userResponse = await api.get('/user')
-                const userData = userResponse.data
+                const { token, role } = response.data
 
-                // Detection for Role (since backend doesn't return it)
-                try {
-                    await api.get('/v1/admins')
-                    userData.role = 'administrator'
-                } catch (err) {
-                    userData.role = 'user'
+                this.token = token
+                localStorage.setItem('token', token)
+
+                // Simpan user minimal info
+                this.user = {
+                    username: credentials.username,
+                    role: role
                 }
 
-                this.user = userData
                 localStorage.setItem('user', JSON.stringify(this.user))
 
                 return response.data
+
             } catch (error) {
-                this.errors = error.response?.data?.violations || error.response?.data?.message || 'Login failed'
+                this.errors =
+                    error.response?.data?.violations ||
+                    error.response?.data?.message ||
+                    'Login failed'
+
                 throw error
             } finally {
                 this.loading = false
             }
         },
+
 
         async signUp(userData) {
             this.loading = true

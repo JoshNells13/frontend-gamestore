@@ -14,14 +14,12 @@
           <thead>
             <tr>
               <th>Username</th>
-              <th>Created at</th>
               <th>Last login</th>
             </tr>
           </thead>
           <tbody>
             <tr v-for="admin in admins" :key="admin.username">
               <td>{{ admin.username }}</td>
-              <td>{{ admin.created_at }}</td>
               <td>{{ admin.last_login_at }}</td>
             </tr>
           </tbody>
@@ -41,7 +39,7 @@ const loading = ref(true)
 const fetchAdmins = async () => {
   try {
     const response = await api.get('/v1/admins')
-    admins.value = response.data.admins
+    admins.value = response.data.content 
   } catch (error) {
     console.error('Failed to fetch admins', error)
   } finally {
