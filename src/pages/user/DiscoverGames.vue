@@ -15,39 +15,24 @@
 
           <div class="col-lg-8 text-lg-end mt-3 mt-lg-0">
             <div class="btn-group me-2" role="group">
-              <button 
-                type="button" 
-                class="btn" 
+              <button type="button" class="btn"
                 :class="params.sortBy === 'popularity' ? 'btn-secondary' : 'btn-outline-primary'"
-                @click="setSortBy('popularity')"
-              >Popularity</button>
-              <button 
-                type="button" 
-                class="btn" 
+                @click="setSortBy('popularity')">Popularity</button>
+              <button type="button" class="btn"
                 :class="params.sortBy === 'uploaddate' ? 'btn-secondary' : 'btn-outline-primary'"
-                @click="setSortBy('uploaddate')"
-              >Recently Updated</button>
-              <button 
-                type="button" 
-                class="btn" 
+                @click="setSortBy('uploaddate')">Recently Updated</button>
+              <button type="button" class="btn"
                 :class="params.sortBy === 'title' ? 'btn-secondary' : 'btn-outline-primary'"
-                @click="setSortBy('title')"
-              >Alphabetically</button>
+                @click="setSortBy('title')">Alphabetically</button>
             </div>
-            
+
             <div class="btn-group" role="group">
-              <button 
-                type="button" 
-                class="btn" 
+              <button type="button" class="btn"
                 :class="params.sortDir === 'asc' ? 'btn-secondary' : 'btn-outline-primary'"
-                @click="setSortDir('asc')"
-              >ASC</button>
-              <button 
-                type="button" 
-                class="btn" 
+                @click="setSortDir('asc')">ASC</button>
+              <button type="button" class="btn"
                 :class="params.sortDir === 'desc' ? 'btn-secondary' : 'btn-outline-primary'"
-                @click="setSortDir('desc')"
-              >DESC</button>
+                @click="setSortDir('desc')">DESC</button>
             </div>
           </div>
         </div>
@@ -58,7 +43,9 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-4">
-                    <img :src="game.thumbnail || '/example_game/v1/thumbnail.png'" :alt="game.title" class="img-fluid rounded">
+                    <img :src="game.thumbnail
+                      ? `${baseURL}/storage/${game.thumbnail}`
+                      : '/example_game/v1/thumbnail.png'" :alt="game.title" class="img-fluid rounded">
                   </div>
                   <div class="col">
                     <h5 class="mb-1">{{ game.title }} <small class="text-muted">By {{ game.author }}</small></h5>
@@ -85,6 +72,7 @@
 </template>
 
 <script setup>
+const baseURL = import.meta.env.VITE_API_URL
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import api from '@/api'
 
@@ -105,7 +93,7 @@ let observer = null
 
 const fetchGames = async (reset = false) => {
   if (loading.value || (noMoreData.value && !reset)) return
-  
+
   loading.value = true
   if (reset) {
     games.value = []
@@ -116,11 +104,11 @@ const fetchGames = async (reset = false) => {
   try {
     const response = await api.get('/v1/games', { params })
     const newGames = response.data.content
-    
+
     if (newGames.length < params.size) {
       noMoreData.value = true
     }
-    
+
     games.value = [...games.value, ...newGames]
     totalGames.value = response.data.totalElements
     params.page++
@@ -143,7 +131,7 @@ const setSortDir = (val) => {
 
 onMounted(() => {
   fetchGames()
-  
+
   observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !loading.value && !noMoreData.value) {
       fetchGames()
@@ -164,14 +152,16 @@ onUnmounted(() => {
 .text-truncate-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;  
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
+
 .card-default {
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .card-default:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

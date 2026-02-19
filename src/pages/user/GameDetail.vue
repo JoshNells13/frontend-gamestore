@@ -57,7 +57,9 @@
             </div>
 
             <div class="text-center">
-              <img :src="game.thumbnail || '/example_game/v1/thumbnail.png'" alt="Thumbnail" class="img-fluid rounded shadow-sm mb-3">
+              <img :src="game.thumbnail
+                ? `${baseURL}/storage/${game.thumbnail}`
+                : '/example_game/v1/thumbnail.png'" :alt="game.title" class="img-fluid rounded shadow-sm mb-3">
               <a v-if="game.downloadPath" :href="game.downloadPath" class="btn btn-primary w-100 mb-2">Download Game</a>
               <router-link to="/discover" class="btn btn-danger w-100">Back</router-link>
             </div>
@@ -75,6 +77,7 @@
 </template>
 
 <script setup>
+const baseURL = import.meta.env.VITE_API_URL
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
