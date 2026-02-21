@@ -49,6 +49,14 @@ const routes = [
                 component: () => import('@/pages/user/ManageGames.vue')
             },
             {
+                path: '/manage-games/:slug/edit',
+                component: () => import('@/pages/user/EditGame.vue'),
+            },
+            {
+                path: 'manage-games/create',
+                component: () => import('@/pages/user/CreateGame.vue'),
+            },
+            {
                 path: 'profile/:username',
                 name: 'UserProfile',
                 component: () => import('@/pages/user/UserProfile.vue')
@@ -57,7 +65,8 @@ const routes = [
                 path: 'game/:slug',
                 name: 'GameDetail',
                 component: () => import('@/pages/user/GameDetail.vue')
-            }
+            },
+
         ]
     },
     {

@@ -3,7 +3,7 @@
     <div class="hero py-5 bg-light">
       <div class="container text-center">
         <h2 class="mb-1">{{ profile.username }}</h2>
-        <h5 class="mt-2 text-muted">Last Login: {{ profile.last_login_at || 'Never' }}</h5>
+        <h5 class="mt-2 text-muted">Last Login: {{ formatDate(profile.last_login_at) }}</h5>
       </div>
     </div>
 
@@ -84,12 +84,19 @@ const fetchProfile = async () => {
   loading.value = true
   try {
     const response = await api.get(`/v1/users/${route.params.username}`)
-    profile.value = response.data
+    profile.value = response.data.Data
+    console.log('Fetched profile', profile.value)
   } catch (error) {
     console.error('Failed to fetch profile', error)
   } finally {
     loading.value = false
   }
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return 'Never'
+  const options = { year: 'numeric', month: 'long', day: 'numeric' }
+  return new Date(dateString).toLocaleDateString(undefined, options)
 }
 
 onMounted(fetchProfile)

@@ -44,7 +44,7 @@
                 <div class="row">
                   <div class="col-4">
                     <img :src="game.thumbnail
-                      ? `${baseURL}/storage/${game.thumbnail}`
+                      ? `${baseURLStorage}/storage/${game.thumbnail}`
                       : '/example_game/v1/thumbnail.png'" :alt="game.title" class="img-fluid rounded">
                   </div>
                   <div class="col">
@@ -73,6 +73,7 @@
 
 <script setup>
 const baseURL = import.meta.env.VITE_API_URL
+const baseURLStorage = import.meta.env.VITE_API_URL_STORAGE
 import { ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 import api from '@/api'
 

@@ -23,21 +23,19 @@
               <div class="card-body">
                 <h5 class="card-title mb-3">Top 10 Leaderboard</h5>
                 <ol v-if="scores.length > 0" class="list-group list-group-numbered">
-                  <li 
-                    v-for="(score, index) in topScores" 
-                    :key="index"
-                    class="list-group-item d-flex justify-content-between align-items-start border-0 ps-0"
-                  >
+                  <li v-for="(score, index) in topScores" :key="index"
+                    class="list-group-item d-flex justify-content-between align-items-start border-0 ps-0">
                     <div class="ms-2 me-auto">
                       <span :class="{ 'fw-bold': score.username === auth.user?.username }">
                         {{ score.username }}
-                        <span v-if="score.username === auth.user?.username" class="badge bg-info text-dark ms-1">(You)</span>
+                        <span v-if="score.username === auth.user?.username"
+                          class="badge bg-info text-dark ms-1">(You)</span>
                       </span>
                     </div>
                     <span class="badge bg-primary rounded-pill">{{ score.score }}</span>
                   </li>
                 </ol>
-                
+
                 <!-- User score if not in top 10 -->
                 <template v-if="userScoreOutsideTop10">
                   <hr />
@@ -49,7 +47,7 @@
                     <span class="badge bg-primary rounded-pill float-end">{{ userScoreOutsideTop10.score }}</span>
                   </div>
                 </template>
-                
+
                 <div v-if="scores.length === 0" class="text-muted text-center py-3">
                   No scores submitted yet
                 </div>
@@ -58,9 +56,13 @@
 
             <div class="text-center">
               <img :src="game.thumbnail
-                ? `${baseURL}/storage/${game.thumbnail}`
+                ? `${baseURLStorage}/storage/${game.thumbnail}`
                 : '/example_game/v1/thumbnail.png'" :alt="game.title" class="img-fluid rounded shadow-sm mb-3">
-              <a v-if="game.downloadPath" :href="game.downloadPath" class="btn btn-primary w-100 mb-2">Download Game</a>
+              <a v-if="game.versions?.length"
+                :href="`${baseURL}/v1/games/${game.slug}/download/${game.versions[game.versions.length - 1].version}`"
+                class="btn btn-primary w-100 mb-2">
+                Download Game
+              </a>
               <router-link to="/discover" class="btn btn-danger w-100">Back</router-link>
             </div>
           </div>
@@ -68,7 +70,7 @@
       </div>
     </div>
   </main>
-  
+
   <div v-else-if="loading" class="text-center py-5">
     <div class="spinner-border text-primary" role="status">
       <span class="visually-hidden">Loading...</span>
@@ -78,6 +80,7 @@
 
 <script setup>
 const baseURL = import.meta.env.VITE_API_URL
+const baseURLStorage = import.meta.env.VITE_API_URL_STORAGE
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
