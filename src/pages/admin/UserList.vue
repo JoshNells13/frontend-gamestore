@@ -2,9 +2,9 @@
   <main>
     <div class="hero py-5 bg-light">
       <div class="container">
-        <button @click="openModal()" class="btn btn-primary">
-          Add User
-        </button>
+        <router-link to="/users/add" class="btn btn-primary">
+          Add Game
+        </router-link>
       </div>
     </div>
 
@@ -22,7 +22,7 @@
           <thead>
             <tr>
               <th>Username</th>
-              <th>Created at</th>
+              <!-- <th>Created at</th> -->
               <th>Last login</th>
               <th>Status</th>
               <th>Action</th>
@@ -33,7 +33,7 @@
               <td>
                 <router-link :to="`/profile/${user.username}`" target="_blank">{{ user.username }}</router-link>
               </td>
-              <td>{{ user.created_at }}</td>
+              <!-- <td>{{ user.created_at }}</td> -->
               <td>{{ user.last_login_at }}</td>
               <td>
                 <span :class="[user.is_blocked ? 'bg-danger' : 'bg-success', 'text-white p-1 d-inline-block']">
@@ -61,12 +61,14 @@
             <form @submit.prevent="saveUser">
               <div class="mb-3">
                 <label class="form-label">Username</label>
-                <input v-model="form.username" type="text" class="form-control" :class="{ 'is-invalid': violations?.username }" :disabled="editMode" />
+                <input v-model="form.username" type="text" class="form-control"
+                  :class="{ 'is-invalid': violations?.username }" :disabled="editMode" />
                 <div v-if="violations?.username" class="invalid-feedback">{{ violations.username.join(', ') }}</div>
               </div>
               <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input v-model="form.password" type="password" class="form-control" :class="{ 'is-invalid': violations?.password }" />
+                <input v-model="form.password" type="password" class="form-control"
+                  :class="{ 'is-invalid': violations?.password }" />
                 <div v-if="violations?.password" class="invalid-feedback">{{ violations.password.join(', ') }}</div>
                 <small v-if="editMode" class="text-muted">Leave blank to keep current password</small>
               </div>
@@ -105,7 +107,8 @@ const fetchUsers = async () => {
   loading.value = true
   try {
     const response = await api.get('/v1/users')
-    users.value = response.data.users
+    users.value = response.data.user
+    console.log(users.value)
   } catch (error) {
     console.error('Failed to fetch users', error)
   } finally {

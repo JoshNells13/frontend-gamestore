@@ -37,6 +37,18 @@ const routes = [
                 component: () => import('@/pages/admin/UserList.vue'),
                 meta: { role: 'administrator' }
             },
+            {
+                path: 'users/add',
+                name: 'useradd',
+                component: () => import('@/pages/admin/UserAdd.vue'),
+                meta: { role: 'administrator' }
+            },
+            {
+                path: 'users/:id',
+                name: 'useredit',
+                component: () => import('@/pages/admin/UserEdit.vue'),
+                meta: { role: 'administrator' }
+            },
             // User Routes
             {
                 path: 'discover',
