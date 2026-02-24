@@ -24,61 +24,71 @@ const routes = [
                 name: 'Home',
                 component: () => import('@/pages/Home.vue')
             },
-            // Admin Routes
+
+         
             {
                 path: 'admins',
                 name: 'AdminList',
                 component: () => import('@/pages/admin/AdminList.vue'),
-                meta: { role: 'administrator' }
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'users',
                 name: 'UserList',
                 component: () => import('@/pages/admin/UserList.vue'),
-                meta: { role: 'administrator' }
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'users/add',
-                name: 'useradd',
+                name: 'UserAdd',
                 component: () => import('@/pages/admin/UserAdd.vue'),
-                meta: { role: 'administrator' }
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'users/:username',
-                name: 'useredit',
+                name: 'UserEdit',
                 component: () => import('@/pages/admin/UserEdit.vue'),
-                meta: { role: 'administrator' }
+                meta: { roles: ['admin'] }
             },
-            // User Routes
-            {
-                path: 'discover',
-                name: 'DiscoverGames',
-                component: () => import('@/pages/user/DiscoverGames.vue')
-            },
+
             {
                 path: 'manage-games',
                 name: 'ManageGames',
-                component: () => import('@/pages/user/ManageGames.vue')
-            },
-            {
-                path: '/manage-games/:slug/edit',
-                component: () => import('@/pages/user/EditGame.vue'),
+                component: () => import('@/pages/user/ManageGames.vue'),
+                meta: { roles: ['developer'] }
             },
             {
                 path: 'manage-games/create',
+                name: 'CreateGame',
                 component: () => import('@/pages/user/CreateGame.vue'),
+                meta: { roles: ['developer'] }
+            },
+            {
+                path: 'manage-games/:slug/edit',
+                name: 'EditGame',
+                component: () => import('@/pages/user/EditGame.vue'),
+                meta: { roles: ['developer'] }
+            },
+
+
+            {
+                path: 'discover',
+                name: 'DiscoverGames',
+                component: () => import('@/pages/user/DiscoverGames.vue'),
+                meta: { roles: ['player', 'developer', 'admin'] }
             },
             {
                 path: 'profile/:username',
                 name: 'UserProfile',
-                component: () => import('@/pages/user/UserProfile.vue')
+                component: () => import('@/pages/user/UserProfile.vue'),
+                meta: { roles: ['player', 'developer', 'admin'] }
             },
             {
                 path: 'game/:slug',
                 name: 'GameDetail',
-                component: () => import('@/pages/user/GameDetail.vue')
+                component: () => import('@/pages/user/GameDetail.vue'),
+                meta: { roles: ['player', 'developer', 'admin'] }
             },
-
         ]
     },
     {
@@ -101,15 +111,24 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
     const auth = useAuthStore()
 
+    
     if (to.meta.requiresAuth && !auth.isAuthenticated) {
-        next('/login')
-    } else if (to.meta.guest && auth.isAuthenticated) {
-        next('/')
-    } else if (to.meta.role && auth.user?.role !== to.meta.role) {
-        next('/forbidden')
-    } else {
-        next()
+        return next('/login')
     }
+
+    
+    if (to.meta.guest && auth.isAuthenticated) {
+        return next('/')
+    }
+
+ 
+    if (to.meta.roles) {
+        if (!auth.user || !to.meta.roles.includes(auth.user.role)) {
+            return next('/forbidden')
+        }
+    }
+
+    next()
 })
 
 export default router
