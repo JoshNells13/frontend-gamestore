@@ -3,7 +3,7 @@
     <div class="hero py-5 bg-light">
       <div class="container">
         <router-link to="/users/add" class="btn btn-primary">
-          Add Game
+          Add User
         </router-link>
       </div>
     </div>
@@ -41,46 +41,13 @@
                 </span>
               </td>
               <td>
-                <span class="text-muted small">No actions available</span>
+                <router-link :to="`/users/${user.username}`"
+                  class="btn btn-sm btn-secondary ms-1 mb-1">Update</router-link>
+                <button @click="confirmDelete(user)" class="btn btn-sm btn-danger ms-1 mb-1">Delete</button>
               </td>
             </tr>
           </tbody>
         </table>
-      </div>
-    </div>
-
-    <!-- User Form Modal -->
-    <div class="modal fade" id="userModal" tabindex="-1">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title">{{ editMode ? 'Update User' : 'Add User' }}</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            <form @submit.prevent="saveUser">
-              <div class="mb-3">
-                <label class="form-label">Username</label>
-                <input v-model="form.username" type="text" class="form-control"
-                  :class="{ 'is-invalid': violations?.username }" :disabled="editMode" />
-                <div v-if="violations?.username" class="invalid-feedback">{{ violations.username.join(', ') }}</div>
-              </div>
-              <div class="mb-3">
-                <label class="form-label">Password</label>
-                <input v-model="form.password" type="password" class="form-control"
-                  :class="{ 'is-invalid': violations?.password }" />
-                <div v-if="violations?.password" class="invalid-feedback">{{ violations.password.join(', ') }}</div>
-                <small v-if="editMode" class="text-muted">Leave blank to keep current password</small>
-              </div>
-              <div class="text-end">
-                <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" class="btn btn-primary" :disabled="saving">
-                  {{ saving ? 'Saving...' : 'Save' }}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
       </div>
     </div>
   </main>
@@ -92,16 +59,9 @@ import api from '@/api'
 
 const users = ref([])
 const loading = ref(true)
-const saving = ref(false)
-const editMode = ref(false)
-const violations = ref(null)
 
-const form = reactive({
-  username: '',
-  password: ''
-})
 
-let modal = null
+
 
 const fetchUsers = async () => {
   loading.value = true
@@ -116,68 +76,13 @@ const fetchUsers = async () => {
   }
 }
 
-const openModal = (user = null) => {
-  violations.value = null
-  if (user) {
-    editMode.value = true
-    form.username = user.username
-    form.password = ''
-  } else {
-    editMode.value = false
-    form.username = ''
-    form.password = ''
-  }
-  if (!modal) {
-    modal = new bootstrap.Modal(document.getElementById('userModal'))
-  }
-  modal.show()
-}
 
-const saveUser = async () => {
-  saving.value = true
-  violations.value = null
-  try {
-    if (editMode.value) {
-      const payload = { ...form }
-      if (!payload.password) delete payload.password
-      await api.put(`/v1/users/${form.username}`, payload)
-    } else {
-      await api.post('/v1/users', form)
-    }
-    modal.hide()
-    fetchUsers()
-  } catch (error) {
-    if (error.response?.status === 400) {
-      violations.value = error.response.data.violations
-    }
-  } finally {
-    saving.value = false
-  }
-}
-
-const blockUser = async (username, reason) => {
-  try {
-    await api.post(`/v1/users/${username}/block`, { reason })
-    fetchUsers()
-  } catch (error) {
-    alert(error.response?.data?.message || 'Failed to block user')
-  }
-}
-
-const unblockUser = async (username) => {
-  try {
-    await api.post(`/v1/users/${username}/unblock`)
-    fetchUsers()
-  } catch (error) {
-    alert(error.response?.data?.message || 'Failed to unblock user')
-  }
-}
-
-const confirmDelete = async (username) => {
-  if (confirm(`Are you sure you want to delete user ${username}?`)) {
+const confirmDelete = async (user) => {
+  if (confirm(`Are you sure you want to delete user ${user.username}?`)) {
     try {
-      await api.delete(`/v1/users/${username}`)
+      await api.delete(`/v1/users/${user.id}`)
       fetchUsers()
+      alert('Successfully Delete')
     } catch (error) {
       alert(error.response?.data?.message || 'Failed to delete user')
     }

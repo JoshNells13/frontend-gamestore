@@ -44,7 +44,7 @@ const routes = [
                 meta: { role: 'administrator' }
             },
             {
-                path: 'users/:id',
+                path: 'users/:username',
                 name: 'useredit',
                 component: () => import('@/pages/admin/UserEdit.vue'),
                 meta: { role: 'administrator' }
